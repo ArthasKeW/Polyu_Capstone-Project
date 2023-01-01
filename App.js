@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import * as Font from 'expo-font';
-import { StyleSheet,Text,View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Home from './screens/home';
-import AppLoading  from 'expo-app-loading';
-import Navigator from './routes/homeStack'
+import AppLoading from 'expo-app-loading';
+import Navigator from './routes/homeStack';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const getFonts = () => Font.loadAsync({
   'nunito-regular': require('./assets/fonts/Nunito-Regular.ttf'),
@@ -14,9 +16,11 @@ const getFonts = () => Font.loadAsync({
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  if(fontsLoaded){
+  if (fontsLoaded) {
     return (
-      <Navigator />
+      <Provider store={store}>
+        <Navigator />
+      </Provider>
     );
   } else {
     return (

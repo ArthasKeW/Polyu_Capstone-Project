@@ -11,7 +11,11 @@ const screens = {
         screen: Home
     },
     TranslatorScreen: {
-        screen: TranslatorScreen
+        screen: TranslatorScreen,
+        navigationOptions: {
+            title: 'Translator',
+
+        }
     },
     TranslatorScreen_Saved: {
         screen: TranslatorScreen_Saved,

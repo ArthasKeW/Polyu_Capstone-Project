@@ -1,38 +1,49 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { useSelector } from 'react-redux';
+import TranslationResult from '../components/TranslationResult';
 import { globalStyles } from '../styles/global';
+import colors from '../utils/colors';
 
 
 export default function Home({ navigation }) {
-    const pressHandler = () => {
+    const savedItems = useSelector(state => state.savedItems.items);
 
+    if(savedItems.length ===0){
+        return <View style={styles.noItemsContainer}>
+            <Text style={styles.noItemText}>No Saved Items</Text>
+        </View>
     }
 
     return (
 
-        <View style={globalStyles.container}>
-            <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
-                <View style={{ flex: 1, marginRight: 10 }}>
-                    <Button title="Saved" onPress={pressHandler} />
-                </View>
-                <View style={{ flex: 1, marginRight: 10 }}>
-                    <Button title="Setting" onPress={pressHandler} />
-                </View>
-            </View>
-            <Text style={globalStyles.titleText}>saved</Text>
+        <View style={styles.container}>
+            <FlatList
+                data={savedItems.slice().reverse()}
+                renderItem={itemData => {
+                    return <TranslationResult itemId={itemData.item.id} />
+                }}
+            />
 
         </View>
 
     )
 }
-const translatorButton = StyleSheet.create({
+const styles = StyleSheet.create({
 
-    button: {
-        flexDirection: 'row',
-        height: 50,
-        marginTop: 50,
-        elevation: 3,
-        width: 50
+    container: {
+        flex: 1,
+        backgroundColor: colors.greyBackground,
+        padding: 10
+    },
+    noItemsContainer:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    noItemText:{
+        fontFamily: 'nunito-regular',
+        letterSpacing:0.3
     }
 
 })

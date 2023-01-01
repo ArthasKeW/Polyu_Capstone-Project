@@ -1,38 +1,66 @@
-import React from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, View, Text, Alert } from 'react-native';
+import SettingsItem from '../components/SettingsItem';
 import { globalStyles } from '../styles/global';
+import colors from '../utils/colors';
+import { AntDesign} from'@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { clearHistory } from '../store/historySlice';
+import { setSavedItems } from '../store/savedItemsSlice';
 
 
 export default function Home({ navigation }) {
-    const pressHandler = () => {
 
-    }
+    const dispatch = useDispatch();
+ 
+    const deleteHistory = useCallback(async () => {
+        try {
+            await AsyncStorage.setItem('history', JSON.stringify([]));
+            dispatch(clearHistory());
+            Alert.alert('History cleared');
+        } catch (error) {
+            console.log(error);
+        }
+    },[dispatch])
+
+    const deleteSavedItems = useCallback(async () => {
+        try {
+            await AsyncStorage.setItem('savedItems', JSON.stringify([]));
+            dispatch(setSavedItems({items:[]}));
+            Alert.alert('Saved items cleared');
+        } catch (error) {
+            console.log(error);
+        }
+    },[dispatch])
 
     return (
 
-        <View style={globalStyles.container}>
-            <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
-                <View style={{ flex: 1, marginRight: 10 }}>
-                    <Button title="Saved" onPress={pressHandler} />
-                </View>
-                <View style={{ flex: 1, marginRight: 10 }}>
-                    <Button title="Setting" onPress={pressHandler} />
-                </View>
-            </View>
-            <Text style={globalStyles.titleText}>setting</Text>
-
+        <View style={styles.container}>
+            <SettingsItem 
+                title='Clear history'
+                subTitle='Clears all items from your history'
+                iconFamily={AntDesign}
+                icon = 'delete'
+                onPress={deleteHistory}
+            />
+            <SettingsItem 
+                title='Clear saved history'
+                subTitle='Clears all saved items'
+                iconFamily={AntDesign}
+                icon = 'delete'
+                onPress ={deleteSavedItems}
+            />
         </View>
 
     )
 }
-const translatorButton = StyleSheet.create({
+const styles = StyleSheet.create({
 
-    button: {
-        flexDirection: 'row',
-        height: 50,
-        marginTop: 50,
-        elevation: 3,
-        width: 50
+    container: {
+        flex:1,
+        backgroundColor: colors.greyBackground,
+        padding: 10,
     }
 
 })
