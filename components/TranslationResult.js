@@ -10,7 +10,9 @@ import { Image } from 'react-native';
 import axios from 'axios';
 import * as Speech from 'expo-speech';
 
+
 export default TranslationResult = props => {
+    
     const searchPhotos = async (query) => {
 
         try {
@@ -26,10 +28,12 @@ export default TranslationResult = props => {
 
     const [expandedItems, setExpandedItems] = useState([]);
     const { itemId } = props;
+    
     const item = useSelector(state => {
         return state.history.items.find(item => item.id === itemId) || state.savedItems.items.find(item => item.id === itemId)
     });
     const savedItems = useSelector(state => state.savedItems.items);
+    const history = useSelector(state => state.history.items);
     const isSaved = savedItems.some(i => i.id === itemId);
     const starIcon = isSaved ? 'star' : 'star-outlined';
 
@@ -51,25 +55,32 @@ export default TranslationResult = props => {
 
     const toggleExpand = async (itemId) => {
         const expandedIndex = expandedItems.findIndex((item) => item.id === itemId);
-
+      
         if (expandedIndex >= 0) {
-            // Item is already expanded, so collapse it
-            setExpandedItems(expandedItems.filter((item) => item.id !== itemId));
+          // Item is already expanded, so collapse it
+          setExpandedItems(expandedItems.filter((item) => item.id !== itemId));
         } else {
-            // Item is not expanded, so expand it
-            const item = savedItems.find((item) => item.id === itemId);
-            const photos = await searchPhotos(item.original_text);
-
-            setExpandedItems([
-                ...expandedItems,
-                {
-                    id: itemId,
-                    photos,
-                    currentPhotoIndex: 0, // add currentPhotoIndex property
-                },
-            ]);
+          // Item is not expanded, so expand it
+          const item =
+            savedItems.find((item) => item.id === itemId) ||
+            history.find((item) => item.id === itemId);
+            console.log("item: ",item);
+            //console.log("item: ",item.translated_text.en);
+            let textToBeSearch = "";
+            if(item.from == "en"){textToBeSearch = item.original_text} else {textToBeSearch = item.translated_text.en}
+          const photos = await searchPhotos(textToBeSearch);
+          setExpandedItems([
+            ...expandedItems,
+            {
+              id: itemId,
+              photos,
+              currentPhotoIndex: 0, // add currentPhotoIndex property
+            },
+          ]);
         }
-    };
+        
+      };
+      
     const expandedItem = expandedItems.find((i) => i.id === item.id);
     const isExpanded = expandedItem !== undefined;
 
@@ -80,7 +91,7 @@ export default TranslationResult = props => {
     const speakTranslatedText = () => {
         Speech.speak(item.translated_text[item.to], { language: item.to });
     };
-
+    
     return <TouchableOpacity onPress={() => toggleExpand(item.id)}>
         <View style={styles.container}>
             <View style={styles.textContainer}>
@@ -204,7 +215,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     buttonText: {
-        fontSize: 30,
+        fontSize: 70,
         fontWeight: "bold",
     },
 })
